@@ -7,7 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var filepath string
+var fromDir string
+var toDir string
 var fctype string
 
 func RootCmd() *cobra.Command {
@@ -19,7 +20,8 @@ func RootCmd() *cobra.Command {
 		RunE:    run,
 	}
 
-	cmd.Flags().StringVar(&filepath, "log-path", "", "path to log file or directory")
+	cmd.Flags().StringVar(&fromDir, "from", "", "path directory to compress logs")
+	cmd.Flags().StringVar(&toDir, "to", ".", "path directory to move the compressed logs")
 	cmd.Flags().StringVar(&fctype, "type", "targz", "compression file type - use (targz|zip)")
 
 	return cmd
@@ -35,14 +37,14 @@ func Execute() {
 func run(cmd *cobra.Command, args []string) error {
 	switch fctype {
 	case "targz":
-		return targz(&filepath)
+		return targz(&fromDir, &toDir)
 	}
 
 	return nil
 }
 
 func prerunerr(cmd *cobra.Command, args []string) error {
-	if filepath == "" {
+	if fromDir == "" {
 		return fmt.Errorf("filepath is required")
 	}
 

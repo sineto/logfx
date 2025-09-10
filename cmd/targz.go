@@ -11,31 +11,35 @@ import (
 	"time"
 )
 
-func targz(filepath *string) error {
+func targz(from, to *string) error {
 	uuid := syscall.Getuid()
+
+	tgzFromDir := strings.TrimSuffix(*from, "/")
+	tgzToDir := strings.TrimSuffix(*to, "/")
+
 	switch uuid {
 	case 0:
 		fmt.Println("Is a root")
-		return comprx(filepath)
+		return comprx(&tgzFromDir, &tgzToDir)
 	default:
-		return comprx(filepath)
+		return comprx(&tgzFromDir, &tgzToDir)
 		//return fmt.Errorf("not root")
 	}
 
 	return nil
 }
 
-func comprx(filepath *string) error {
-	archive := archiveName(filepath)
+func comprx(from, to *string) error {
+	archive := archiveName(from)
 	fmt.Println(archive)
 
-	out, err := os.Create(archive)
+	out, err := os.Create(*to + "/" + archive)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	if err := createArchive(out, filepath); err != nil {
+	if err := createArchive(out, from); err != nil {
 		return err
 	}
 
