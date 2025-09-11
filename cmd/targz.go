@@ -19,11 +19,9 @@ func targz(from, to *string) error {
 
 	switch uuid {
 	case 0:
-		fmt.Println("Is a root")
 		return comprx(&tgzFromDir, &tgzToDir)
 	default:
-		return comprx(&tgzFromDir, &tgzToDir)
-		//return fmt.Errorf("not root")
+		return fmt.Errorf("need to grant sudo privileges")
 	}
 
 	return nil

@@ -12,8 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//cron expression to execute job - see: [logfx cron --help]
-
 var expr string
 var exprFlagStr = `(required) A cron expression represents a set of times to execute a job. Use 5 space-separated fields, around quotes. 
 Like: logfx cron --expr="* * * * *"
@@ -78,11 +76,4 @@ func listenSignal() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-ch
 	fmt.Println("Received signal, shutting down...")
-}
-
-func task() {
-	fmt.Println(time.Now().String() + " - Start Task")
-	time.Sleep(4 * time.Second)
-	fmt.Println(fromDir, expr)
-	fmt.Println(time.Now().String() + " - End Task")
 }
