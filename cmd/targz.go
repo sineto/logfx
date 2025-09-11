@@ -30,6 +30,8 @@ func targz(from, to *string) error {
 }
 
 func comprx(from, to *string) error {
+	logger.Info("logfx - creating archive - start task", "from dir", fromDir, "to dir", toDir)
+
 	archive := archiveName(from)
 	fmt.Println(archive)
 
@@ -43,6 +45,7 @@ func comprx(from, to *string) error {
 		return err
 	}
 
+	logger.Info("logfx - archive created - end task", "from dir", fromDir, "to dir", toDir)
 	return nil
 }
 
@@ -67,7 +70,10 @@ func createArchive(buf io.Writer, filepath *string) error {
 
 func addFiles(trw *tar.Writer, filepath *string, files *[]os.DirEntry) error {
 	for _, file := range *files {
-		f, err := os.Open(*filepath + "/" + file.Name())
+		fname := *filepath + "/" + file.Name()
+		logger.Info("logfx - adding file", "file", fname)
+
+		f, err := os.Open(fname)
 		if err != nil {
 			return err
 		}

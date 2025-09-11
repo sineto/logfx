@@ -2,28 +2,36 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
-var fromDir string
-var toDir string
-var fctype string
+var (
+	fromDir string
+	toDir   string
+	fctype  string
+)
+
+var jsonHandler = slog.NewJSONHandler(os.Stderr, nil)
+var logger = slog.New(jsonHandler)
 
 func RootCmd() *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:     "logfx",
 		Short:   "logfx - CLI to process file compression",
-		PreRunE: prerunerr,
+		PreRunE: cmdRunErr,
 		RunE:    run,
 	}
 
-	cmd.Flags().StringVar(&fromDir, "from", "", "path directory to compress logs")
-	cmd.Flags().StringVar(&toDir, "to", ".", "path directory to move the compressed logs")
-	cmd.Flags().StringVar(&fctype, "type", "targz", "compression file type - use (targz|zip)")
+	cmd.PersistentFlags().StringVar(&fromDir, "from", "", "path directory to compress logs (required)")
+	cmd.MarkPersistentFlagRequired("from")
 
+	cmd.PersistentFlags().StringVar(&toDir, "to", ".", "path directory to move the compressed logs")
+	cmd.PersistentFlags().StringVar(&fctype, "type", "targz", "compression file type - use (targz|zip)")
+
+	cmd.AddCommand(CronCmd())
 	return cmd
 }
 
@@ -43,11 +51,7 @@ func run(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func prerunerr(cmd *cobra.Command, args []string) error {
-	if fromDir == "" {
-		return fmt.Errorf("filepath is required")
-	}
-
+func cmdRunErr(cmd *cobra.Command, args []string) error {
 	switch fctype {
 	case "targz", "zip":
 	default:
